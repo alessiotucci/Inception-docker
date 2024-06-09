@@ -73,7 +73,7 @@ sub prompt_reboot
 
 # Main execution
 update_system();
-install_packages('git', 'make', 'vim');
+install_packages('git', 'make', 'vim', 'docker.io', 'docker-compose', 'perl');
 setup_localhost();
 install_docker();
 prompt_reboot();
