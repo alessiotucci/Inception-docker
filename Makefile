@@ -1,52 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: atucci <atucci@student.42.fr>              +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/06/06 22:01:11 by atucci            #+#    #+#              #
-#    Updated: 2024/06/09 20:21:20 by atucci           ###   ########.fr        #
+#    Host: e4r2p4.42roma.it                                           /_/      #
+#    File: Makefile                                                ( o.o )     #
+#    Created: 2025/07/12 17:34:26 | By: atucci <atucci@student.42  > ^ <       #
+#    Updated: 2025/07/12 17:34:55                                   /          #
+#    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
 
 
-#***********#
-# Variables #
-#***********#
-DOCKER_COMPOSE_FILE = ./srcs/docker-compose.yml
-
-#***************#
-# Phony Targets #
-#***************#
-.PHONY: up down clean logs
-
-#****************#
-# Default target #
-#****************#
-all: up
-
-#*****************************#
-# Start the Docker containers #
-#*****************************#
-up:
-	@docker-compose -f $(DOCKER_COMPOSE_FILE) up -d --build
-
-#**************************************#
-#Stop and remove the Docker containers #
-#**************************************#
-down:
-	@docker-compose -f $(DOCKER_COMPOSE_FILE) down
-
-#*************************#
-#Clean the Docker volumes #
-#*************************#
-clean:
-	@docker volume prune -f
-
-#***************************************#
-#Show the logs of the Docker containers #
-#***************************************#
-logs:
-	@docker-compose -f $(DOCKER_COMPOSE_FILE) logs
 

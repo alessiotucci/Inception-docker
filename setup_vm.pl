@@ -8,40 +8,37 @@ use Term::ANSIColor;
 my $domain = "atucci.42.fr";
 
 # Function to print colored messages
-sub print_message
+sub print_message()
 {
 	my ($color, $message) = @_;
-	# Print the message in the specified color
 	print color($color), $message, color('reset'), "\n";
 }
 
 # Function to execute a command and print a message
-sub execute_command
+sub execute_command()
 {
 	my ($color, $message, $command) = @_;
 	# Print the message
 	print_message($color, $message);
-	# Execute the command if it is defined
 	system($command) if $command;
 }
 
 # Function to update the system
-sub update_system
+sub update_system()
 {
 	# Execute the system update command
 	execute_command('magenta', 'Updating system...', 'sudo apt update > /dev/null 2>&1 && sudo apt upgrade -y > /dev/null 2>&1');
-	# Print a completion message
 	execute_command('green', 'Done.', '');
 }
 
 # Function to install packages
-sub install_packages {
+sub install_packages()
+{
 	my @packages = @_;
 	# Loop over each package
-	for my $package (@packages) {
-		# Execute the package installation command
+	for my $package (@packages)
+	{
 		execute_command('magenta', "Installing $package...", "sudo apt install -y $package > /dev/null 2>&1");
-		# Print a completion message
 		execute_command('green', 'Done.', '');
 	}
 }
@@ -96,20 +93,13 @@ sub prompt_reboot
 		system('sudo reboot');
 	}
 	else
-	{
-		# If the user does not want to reboot, print a message
 		print_message('green', 'Reboot skipped. Please reboot manually if needed.');
-	}
 }
 
 # Main execution
 # Update the system
 update_system();
-# Install the necessary packages
 install_packages('git', 'make', 'vim', 'docker.io', 'docker-compose', 'perl');
-# Set up localhost
 setup_localhost();
-# Install Docker
 install_docker();
-# Prompt for reboot
 prompt_reboot();
