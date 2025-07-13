@@ -3,7 +3,7 @@
 #    Host: e3r7p3.42roma.it                                           /_/      #
 #    File: docker-compose.yml                                      ( o.o )     #
 #    Created: 2025/07/13 15:14:40 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/13 18:15:16                                   /          #
+#    Updated: 2025/07/13 19:11:43                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -39,6 +39,8 @@ services:
 # Define a custom network
 # - All containers must use the same internal bridge network
 # - No use of "network: host" or deprecated "links"
+
+#TODO:bonus stuff#
 
 # OPTIONAL: Redis cache service (bonus)
 # - Used to improve WordPress performance

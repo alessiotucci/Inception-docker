@@ -3,7 +3,7 @@
 #    Host: e4r2p4.42roma.it                                           /_/      #
 #    File: Makefile                                                ( o.o )     #
 #    Created: 2025/07/12 17:34:26 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/13 16:16:58                                   /          #
+#    Updated: 2025/07/13 19:10:56                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -17,7 +17,7 @@ YELLOW = \033[1;33m
 RED = \033[1;31m
 RESET = \033[0m
 
-#---
+#---TODO: check if need to use whoami
 USERNAME = atucci
 PROJECTNAME = Inception
 
@@ -30,7 +30,7 @@ ENV_FILE = srcs/.env
 # ******************************************** #
 all: build up
 	@echo "$(GREEN) $(USERNAME):\t$(PROJECTNAME) $(RESET) default"
-	@echo "$(GREEN) building and starting the containers -> build -> up$(RESET)"
+	@echo "$(GREEN) building and starting the containers -> build -> up $(RESET)"
 
 # ********************************************* #
 # BUILD RULE: this rule build up all the images #
@@ -60,7 +60,7 @@ down:
 clean: down
 	@echo "$(GREEN) $(USERNAME):\t$(PROJECTNAME) $(RESET) clean rule!"
 	#sudo rm -rf /home/$(USERNAME)/data/*
-	ls /home/$(USERNAME)/data/*
+	#TODO:ls /home/$(USERNAME)/data/*
 
 
 
@@ -70,6 +70,7 @@ clean: down
 fclean: clean
 	@echo "$(GREEN) $(USERNAME):\t$(PROJECTNAME) $(RESET) fclean rule!"
 #	docker rmi -f $(shell docker images -q nginx wordpress mariadb 2>/dev/null) || true
+#	TODO
 
 
 
