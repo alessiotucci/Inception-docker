@@ -3,7 +3,7 @@
 #    Host: e4r2p4.42roma.it                                           /_/      #
 #    File: Makefile                                                ( o.o )     #
 #    Created: 2025/07/12 17:34:26 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/13 19:10:56                                   /          #
+#    Updated: 2025/07/15 09:04:42                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -25,12 +25,44 @@ PROJECTNAME = Inception
 COMPOSE = docker-compose -f srcs/docker-compose.yml
 ENV_FILE = srcs/.env
 
+
 # ******************************************** #
 # DEFAULT RULE: build and start the containers #
 # ******************************************** #
-all: build up
+all: check-docker build up
 	@echo "$(GREEN) $(USERNAME):\t$(PROJECTNAME) $(RESET) default"
 	@echo "$(GREEN) building and starting the containers -> build -> up $(RESET)"
+
+# ****************************************** #
+# CHECK RULE: write a nice ascii and checks  #
+# ****************************************** #
+check-docker:
+	@command -v docker >/dev/null 2>&1 || { \
+		echo "Error: Docker is not installed. Please install Docker."; \
+		exit 1; \
+	}
+	@command -v docker-compose >/dev/null 2>&1 || { \
+		echo "Error: docker-compose is not installed. Please install Docker Compose."; \
+		exit 1; \
+	}
+	@printf "$(CYAN)%s\n" \
+	"⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣴⣶⣾⣷⣶⣦⣄⠀⠀⠀" \
+	"⠀⠀⠀⠀⠀⠀⠀⣠⣾⡇⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀" \
+	"⢀⣀⣀⣀⣠⣴⣾⣿⣿⠃⠀⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆" \
+	"⠈⠻⢿⣿⣿⣿⡿⣟⠃⠀⣀⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡧" \
+	"⠀⠀⠀⠀⠈⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣼⣿⣿⣿⣿⣿⣿⠇" \
+	"⠀⠀⠀⠀⠀⠀⠀⠈⠙⢻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠛⡙⠛⢛⡻⠋⠀" \
+	"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠒⠄⠬⢉⣡⣠⣿⣿⣿⣇⡌⠲⠠⠋⠈⠀⠀⠀" \
+	"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀" \
+	"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" \
+	"  _____                      _   _             " \
+	" |_   _|                    | | (_)            " \
+	"   | |  _ __   ___ ___ _ __ | |_ _  ___  _ __  " \
+	"   | | | '_ \ / __/ _ \ '_ \| __| |/ _ \| '_ \ " \
+	"  _| |_| | | | (_|  __/ |_) | |_| | (_) | | | |" \
+	" |_____|_| |_|\___\___| .__/ \__|_|\___/|_| |_|" \
+	"                       | |                      " \
+	"                       |_|                      "
 
 # ********************************************* #
 # BUILD RULE: this rule build up all the images #
@@ -97,4 +129,4 @@ logs:
 # ******************************************** #
 # Declare all rules as PHONY (always executed) #
 # ******************************************** #
-.PHONY: all build up down clean fclean re ps logs
+.PHONY: all build up down clean fclean re ps logs check-docker
