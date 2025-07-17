@@ -11,3 +11,6 @@ bidden to pull ready-made Docker images, as well as using services such as Docke
 
 ## Docker Images
 ![image](https://github.com/alessiotucci/inception-42-just-docker-/assets/116757689/4bd01da7-1d1c-451b-9a5e-1120679f9b0c)
+
+<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/bb8a74c6-1a2f-4730-bdd3-e2d3fa706aec" />
+
