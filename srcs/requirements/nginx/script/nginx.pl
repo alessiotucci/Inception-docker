@@ -13,3 +13,5 @@ my $var = '                     __
            \$$    $$                        
             \$$$$$$                         ';
 print("\n$var\n");
+
+exec(@ARGV);
