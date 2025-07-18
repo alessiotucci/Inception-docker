@@ -3,20 +3,14 @@
 #    Host: e3r7p3.42roma.it                                           /_/      #
 #    File: Dockerfile                                              ( o.o )     #
 #    Created: 2025/07/13 16:45:17 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/17 19:06:03                                   /          #
+#    Updated: 2025/07/18 17:58:41                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
 
 # Dockerfile for Wordpress
-<<<<<<< HEAD
 #TODO: remember that old stable point to the penultimate availabe!
 FROM debian:oldstable
-
-=======
-# Use the penultimate stable Debian release
-FROM debian:oldstable
-
 # Prevent interactive prompts during package install
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -55,5 +49,7 @@ RUN chown -R www-data:www-data /var/www/html && \
 # (Remember: this is only useful if using TCP sockets, not unix socket)
 EXPOSE 9000
 
+RUN mkdir -p /run/php
 # Start PHP-FPM in the foreground (PID 1)
-CMD ["php-fpm", "-F"]
+CMD ["php-fpm7.4","-F"]
+
