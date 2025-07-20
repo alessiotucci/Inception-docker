@@ -3,7 +3,7 @@
 #    Host: e3r7p3.42roma.it                                           /_/      #
 #    File: docker-compose.yml                                      ( o.o )     #
 #    Created: 2025/07/13 15:14:40 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/20 18:12:00                                   /          #
+#    Updated: 2025/07/20 20:12:00                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -26,11 +26,15 @@ services:
     container_name: mariadb
     restart: always #check
     volumes:
-      - wordpress_db_data:/var/lib/mysql
+    - wordpress_db_data:/var/lib/mysql
+    - ./secrets/db_root_password.txt:/run/secrets/db_root_password.txt:ro
+    - ./secrets/db_user.txt:/run/secrets/db_user.txt:ro
+    - ./secrets/db_user_password.txt:/run/secrets/db_user_password.txt:ro
     environment:
-      - MY_SQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
-      - MY_SQL_DATABASE=wordpress
-      - MY_SQL_USER_FILE=/run/secrets/db_user_password
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password.txt
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER_FILE=/run/secrets/db_user.txt
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_user_password.txt
     networks:
       - app-network
     # secrets:
@@ -52,10 +56,10 @@ services:
     volumes:
       - wordpress_site_data:/var/www/html
     environment:
-     - WORDPRESS_DB_HOST=mariadb:3306
-     - WORDPRESS_DB_NAME=wordpress
-     - WORDPRESS_DB_USER_FILE=/run/secrets/db_user
-     - WORDPRESS_DB_PASSWORD_FILE=/run/secrets/db_user_password
+      - WORDPRESS_DB_HOST=mariadb:3306
+      - WORDPRESS_DB_NAME=wordpress
+      - WORDPRESS_DB_USER_FILE=/run/secrets/db_user.txt
+      - WORDPRESS_DB_PASSWORD_FILE=/run/secrets/db_user_password.txt
     depends_on:
      - mariadb
     networks:
