@@ -3,7 +3,7 @@
 #    Host: e4r2p4.42roma.it                                           /_/      #
 #    File: Makefile                                                ( o.o )     #
 #    Created: 2025/07/12 17:34:26 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/15 09:04:42                                   /          #
+#    Updated: 2025/07/20 18:20:01                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -91,8 +91,7 @@ down:
 # ************************ #
 clean: down
 	@echo "$(GREEN) $(USERNAME):\t$(PROJECTNAME) $(RESET) clean rule!"
-	#sudo rm -rf /home/$(USERNAME)/data/*
-	#TODO:ls /home/$(USERNAME)/data/*
+	sudo rm -rf /home/$(USERNAME)/data/*
 
 
 
@@ -101,7 +100,12 @@ clean: down
 # ************************ #
 fclean: clean
 	@echo "$(GREEN) $(USERNAME):\t$(PROJECTNAME) $(RESET) fclean rule!"
-#	docker rmi -f $(shell docker images -q nginx wordpress mariadb 2>/dev/null) || true
+	@images_to_remove=$$(docker images -q nginx wordpress mariadb 2>/dev/null); \
+	if [ -n "$$images_to_remove" ]; then \
+		docker rmi -f $$images_to_remove; \
+	else \
+		echo "$(YELLOW)No specific project images to remove, skipping docker rmi.$(RESET)"; \
+	fi
 #	TODO
 
 

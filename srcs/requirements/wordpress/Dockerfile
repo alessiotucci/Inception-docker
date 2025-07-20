@@ -3,7 +3,7 @@
 #    Host: e3r7p3.42roma.it                                           /_/      #
 #    File: Dockerfile                                              ( o.o )     #
 #    Created: 2025/07/13 16:45:17 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/18 17:58:41                                   /          #
+#    Updated: 2025/07/20 18:36:14                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -31,6 +31,9 @@ RUN apt-get update && apt-get install -y \
     mariadb-client \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+# after installing php-fpm, add:
+
+RUN sed -i 's|^listen = .*|listen = 0.0.0.0:9000|' /etc/php/7.4/fpm/pool.d/www.conf
 
 # Create a directory for WordPress
 WORKDIR /var/www/html

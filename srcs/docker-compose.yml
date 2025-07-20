@@ -3,7 +3,7 @@
 #    Host: e3r7p3.42roma.it                                           /_/      #
 #    File: docker-compose.yml                                      ( o.o )     #
 #    Created: 2025/07/13 15:14:40 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/13 19:11:43                                   /          #
+#    Updated: 2025/07/20 18:12:00                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -13,24 +13,77 @@ version: "3.9"
 # Define all services needed for the mandatory part here
 services:
 
-# NGINX reverse proxy container
-# - Should act as the single entry point (port 443 only)
-# - Needs to use TLSv1.2 or TLSv1.3
-# - Should proxy requests to WordPress
-# - Must depend on WordPress and possibly MariaDB (indirectly)
-# - Mount certificate files or secrets as needed
+# MariaDB container
+# - Should store and serve the WordPress database
+# - Requires secure credentials via environment or secrets
+# - Mounts a volume for database persistence
+# - Should initialize with proper user and password settings
+  mariadb:
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+    image: mariadb # naming convention
+    container_name: mariadb
+    restart: always #check
+    volumes:
+      - wordpress_db_data:/var/lib/mysql
+    environment:
+      - MY_SQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+      - MY_SQL_DATABASE=wordpress
+      - MY_SQL_USER_FILE=/run/secrets/db_user_password
+    networks:
+      - app-network
+    # secrets:
+#     -   db_root_password
+#     -   db_user_password
 
 # WordPress container (PHP-FPM only, no web server)
 # - Should serve PHP application logic for WordPress
 # - Should connect to the database (MariaDB)
 # - Should use environment variables for configuration
 # - Mounts a volume for WordPress site files
+  wordpress:
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+    image: wordpress
+    container_name: wordpress
+    restart: always
+    volumes:
+      - wordpress_site_data:/var/www/html
+    environment:
+     - WORDPRESS_DB_HOST=mariadb:3306
+     - WORDPRESS_DB_NAME=wordpress
+     - WORDPRESS_DB_USER_FILE=/run/secrets/db_user
+     - WORDPRESS_DB_PASSWORD_FILE=/run/secrets/db_user_password
+    depends_on:
+     - mariadb
+    networks:
+     - app-network
 
-# MariaDB container
-# - Should store and serve the WordPress database
-# - Requires secure credentials via environment or secrets
-# - Mounts a volume for database persistence
-# - Should initialize with proper user and password settings
+# NGINX reverse proxy container
+# - Should act as the single entry point (port 443 only)
+# - Needs to use TLSv1.2 or TLSv1.3
+# - Should proxy requests to WordPress
+# - Must depend on WordPress and possibly MariaDB (indirectly)
+# - Mount certificate files or secrets as needed
+  nginx:
+    build:
+      context: ./requirements/nginx
+      dockerfile: Dockerfile
+    image: nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress_site_data:/var/www/html:ro
+      - ./secrets/certs/:/etc/ssl/certs/
+      - ./secrets/private:/etc/ssl/private
+    depends_on:
+      - wordpress #check this
+    networks:
+      - app-network
 
 # Define volumes (named) for persistence
 # - One for WordPress files
@@ -65,7 +118,12 @@ services:
 # Define named volumes here
 # - wordpress_db_data:
 # - wordpress_site_data:
+volumes:
+  wordpress_db_data:
+  wordpress_site_data:
 
 # Define custom networks here
 # - app-network:
-
+networks:
+  app-network:
+    driver: bridge
