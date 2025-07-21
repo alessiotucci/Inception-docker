@@ -3,7 +3,7 @@
 #    Host: e3r7p3.42roma.it                                           /_/      #
 #    File: docker-compose.yml                                      ( o.o )     #
 #    Created: 2025/07/13 15:14:40 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/20 20:12:00                                   /          #
+#    Updated: 2025/07/21 18:15:55                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -37,9 +37,6 @@ services:
       - MYSQL_PASSWORD_FILE=/run/secrets/db_user_password.txt
     networks:
       - app-network
-    # secrets:
-#     -   db_root_password
-#     -   db_user_password
 
 # WordPress container (PHP-FPM only, no web server)
 # - Should serve PHP application logic for WordPress
@@ -55,6 +52,8 @@ services:
     restart: always
     volumes:
       - wordpress_site_data:/var/www/html
+      - ./secrets/db_user.txt:/run/secrets/db_user.txt:ro
+      - ./secrets/db_user_password.txt:/run/secrets/db_user_password.txt:ro
     environment:
       - WORDPRESS_DB_HOST=mariadb:3306
       - WORDPRESS_DB_NAME=wordpress
