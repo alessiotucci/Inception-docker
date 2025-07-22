@@ -3,7 +3,7 @@
 #    Host: e3r7p3.42roma.it                                           /_/      #
 #    File: Dockerfile                                              ( o.o )     #
 #    Created: 2025/07/13 16:45:01 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/17 10:49:44                                   /          #
+#    Updated: 2025/07/22 11:39:54                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -72,11 +72,9 @@ COPY conf/default.conf /etc/nginx/conf.d/default.conf
 COPY ./script/nginx.pl /usr/local/bin/
 # Make script executable
 RUN chmod +x /usr/local/bin/nginx.pl
-
 # Set entrypoint script to handle initialization
 # Why needed: To perform runtime configuration before starting NGINX
 ENTRYPOINT ["/usr/local/bin/nginx.pl"]
-
 # Default command to start NGINX in foreground
 # - 'nginx': Start NGINX master process
 # - '-g daemon off;': Run in foreground (required for Docker containers)
