@@ -3,7 +3,7 @@
 #    Host: e4r2p4.42roma.it                                           /_/      #
 #    File: Makefile                                                ( o.o )     #
 #    Created: 2025/07/12 17:34:26 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/20 18:20:01                                   /          #
+#    Updated: 2025/07/23 08:43:36                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -98,15 +98,9 @@ clean: down
 # ************************ #
 # FCLEAN RULE:             #
 # ************************ #
-fclean: clean
+fclean: clean ps
 	@echo "$(GREEN) $(USERNAME):\t$(PROJECTNAME) $(RESET) fclean rule!"
-	@images_to_remove=$$(docker images -q nginx wordpress mariadb 2>/dev/null); \
-	if [ -n "$$images_to_remove" ]; then \
-		docker rmi -f $$images_to_remove; \
-	else \
-		echo "$(YELLOW)No specific project images to remove, skipping docker rmi.$(RESET)"; \
-	fi
-#	TODO
+	@docker rmi -f $$(docker images -q) || true
 
 
 
@@ -116,12 +110,15 @@ fclean: clean
 re: fclean all
 	@echo "$(GREEN) $(USERNAME):\t$(PROJECTNAME) $(RESET) re rule!"
 
-# ************************ #
-# PS RULE:                 #
-# ************************ #
+# ******** #
+# PS RULE: #
+# ******** #
 ps:
-	@echo "$(GREEN) $(USERNAME):\t$(PROJECTNAME) $(RESET) ps rule!"
-	$(COMPOSE) ps
+	@echo "$(GREEN)==> $(USERNAME): $(PROJECTNAME) – docker ps -a$(RESET)"
+	@docker ps -a
+	@echo "$(GREEN)==> $(USERNAME): $(PROJECTNAME) – docker images -a$(RESET)"
+	@docker images -a
+
 # ************************ #
 # LOGS RULE:               #
 # ************************ #
