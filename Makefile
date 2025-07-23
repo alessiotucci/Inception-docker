@@ -3,7 +3,7 @@
 #    Host: e4r2p4.42roma.it                                           /_/      #
 #    File: Makefile                                                ( o.o )     #
 #    Created: 2025/07/12 17:34:26 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/23 08:43:36                                   /          #
+#    Updated: 2025/07/23 10:25:42                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -37,11 +37,11 @@ all: check-docker build up
 # CHECK RULE: write a nice ascii and checks  #
 # ****************************************** #
 check-docker:
-	@command -v docker >/dev/null 2>&1 || { \
+	@command -v docker  || { \
 		echo "Error: Docker is not installed. Please install Docker."; \
 		exit 1; \
 	}
-	@command -v docker-compose >/dev/null 2>&1 || { \
+	@command -v docker-compose  || { \
 		echo "Error: docker-compose is not installed. Please install Docker Compose."; \
 		exit 1; \
 	}
