@@ -3,11 +3,11 @@ use strict;
 use warnings;
 use IO::Socket::INET;
 
-sub read_secret()
+sub read_secret
 {
     my ($file) = @_;
     return undef unless $file;
-    open (my $fh, '<', $file) or die "WORDPRESS ERROR: Cannot open $file: $!";
+    open my $fh, '<', $file or die "WORDPRESS ERROR: Cannot open $file: $!";
     my $value = <$fh>;
     close $fh;
     chomp $value;
