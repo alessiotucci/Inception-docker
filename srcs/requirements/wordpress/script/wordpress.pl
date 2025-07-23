@@ -3,10 +3,11 @@ use strict;
 use warnings;
 use IO::Socket::INET;
 
-sub read_secret {
+sub read_secret()
+{
     my ($file) = @_;
     return undef unless $file;
-    open my $fh, '<', $file or die "WORDPRESS ERROR: Cannot open $file: $!";
+    open (my $fh, '<', $file) or die "WORDPRESS ERROR: Cannot open $file: $!";
     my $value = <$fh>;
     close $fh;
     chomp $value;
@@ -20,10 +21,12 @@ my $db_host = $ENV{'WORDPRESS_DB_HOST'} or die "WORDPRESS ERROR: WORDPRESS_DB_HO
 my $db_name = $ENV{'WORDPRESS_DB_NAME'} or die "WORDPRESS ERROR: WORDPRESS_DB_NAME not set";
 my $user_file = $ENV{'WORDPRESS_DB_USER_FILE'} or die "WORDPRESS ERROR: Secret file path not provided";
 my $pass_file = $ENV{'WORDPRESS_DB_PASSWORD_FILE'} or die "WORDPRESS ERROR: Secret file path not provided";
+# Here I can add the new secrets
 
 # Read secrets
 my $db_user = read_secret($user_file);
 my $db_pass = read_secret($pass_file);
+# Here I can read the new secrets
 
 # Wait for DB
 print "WORDPRESS: Waiting for DB ($db_host)...\n";
