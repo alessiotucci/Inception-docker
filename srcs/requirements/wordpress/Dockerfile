@@ -3,7 +3,7 @@
 #    Host: e3r7p3.42roma.it                                           /_/      #
 #    File: Dockerfile                                              ( o.o )     #
 #    Created: 2025/07/13 16:45:17 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/22 19:31:19                                   /          #
+#    Updated: 2025/07/24 17:39:37                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -58,7 +58,10 @@ EXPOSE 9000
 
 RUN mkdir -p /run/php
 
-
+# installing the cli for wp
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+RUN chmod +x wp-cli.phar
+RUN mv wp-cli.phar /usr/local/bin/wp
 
 # Copy and prepare Perl entrypoint script
 COPY ./script/wordpress.pl /usr/local/bin/

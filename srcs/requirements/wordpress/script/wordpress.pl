@@ -21,12 +21,12 @@ my $db_host = $ENV{'WORDPRESS_DB_HOST'} or die "WORDPRESS ERROR: WORDPRESS_DB_HO
 my $db_name = $ENV{'WORDPRESS_DB_NAME'} or die "WORDPRESS ERROR: WORDPRESS_DB_NAME not set";
 my $user_file = $ENV{'WORDPRESS_DB_USER_FILE'} or die "WORDPRESS ERROR: Secret file path not provided";
 my $pass_file = $ENV{'WORDPRESS_DB_PASSWORD_FILE'} or die "WORDPRESS ERROR: Secret file path not provided";
-# Here I can add the new secrets
+
+
 
 # Read secrets
 my $db_user = read_secret($user_file);
 my $db_pass = read_secret($pass_file);
-# Here I can read the new secrets
 
 # Wait for DB
 print "WORDPRESS: Waiting for DB ($db_host)...\n";
@@ -67,6 +67,57 @@ my $config = "/var/www/html/wp-config.php";
     open my $out, ">", $config or die "Can't write config: $!";
     print $out $content;
     close $out;
+
+###############################################################################
+# After writing wp-config.php:
+# 1. Read admin credentials from secret files
+my $adm_user = 'admin';#   = $ENV{'WORDPRESS_AD_FILE'}         or die "No WORDPRESS_AD_FILE";
+print("admin: $adm_user\n");
+
+my $adm_pass = 'password'; #$ENV{'WORDPRESS_AD_PASSWORD_FILE'} or die "No WORDPRESS_AD_PASSWORD_FILE";
+printf("password: $adm_pass\n");
+
+# 2. Read other install parameters
+my $site_url   = "test";
+my $site_title = "test";
+my $admin_email= 'test@gmail.com';
+
+# 3. Run WP-CLI to install WordPress if not already installed
+unless (-f "/var/www/html/wp-includes/version.php")
+{
+my $cmd = 
+  "wp core install "
+  . " --url=$site_url "
+  . " --title='$site_title' "
+  . " --admin_user=$adm_user "
+  . " --admin_password=$adm_pass "
+  . " --admin_email=$admin_email "
+  . " --allow-root"
+  . " --skip-email";
+
+print("DEBUG:[$cmd]\n");
+system($cmd) == 0
+  or die "FAIL: wp core install failed (exit code: $?)";
+
+}
+
+# 4. Ensure the admin user exists (idempotent)
+#system("wp user get $adm_user --field=ID") == 0
+#  or do
+{
+   my $cmd =
+		" wp user create "
+		. $adm_user . " "
+		. $admin_email
+		. " --role=administrator"
+		. " --allow-root"
+		. " --user_pass=$adm_pass";
+		
+   print("DEBUG:[$cmd]");
+    system($cmd) == 0
+      or die "FAIL: Failed to create admin user";
+  };
+###############################################################################
 
 my $var = '
 ▗▖ ▗▖ ▗▄▖ ▗▄▄▖ ▗▄▄▄ ▗▄▄▖ ▗▄▄▖ ▗▄▄▄▖ ▗▄▄▖ ▗▄▄▖
