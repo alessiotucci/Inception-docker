@@ -49,6 +49,14 @@ for my $try (1..60)
 
 ## Generate wp-config.php if not exists
 my $config = "/var/www/html/wp-config.php";
+
+#################################################################################
+#Perl provides a set of unary file-test operators—often called “flags” to check #
+#various attributes of files and directories
+#################################################################################
+
+unless (-e $config) # -e check if the file exist
+{
     print "WORDPRESS: Creating wp-config.php\n";
 
     open my $in, "<", "/var/www/html/wp-config-sample.php" or die "Can't read sample config: $!";
@@ -67,10 +75,12 @@ my $config = "/var/www/html/wp-config.php";
     open my $out, ">", $config or die "Can't write config: $!";
     print $out $content;
     close $out;
+}
 
 ###############################################################################
 # After writing wp-config.php:
 # 1. Read admin credentials from secret files
+#TODO replace the hard coded values with the env or secrets values
 my $adm_user = 'admin';#   = $ENV{'WORDPRESS_AD_FILE'}         or die "No WORDPRESS_AD_FILE";
 print("admin: $adm_user\n");
 
@@ -82,7 +92,10 @@ my $site_url   = "test";
 my $site_title = "test";
 my $admin_email= 'test@gmail.com';
 
+###############################################################################
 # 3. Run WP-CLI to install WordPress if not already installed
+# -f $file Exists and is a plain file
+###############################################################################
 unless (-f "/var/www/html/wp-includes/version.php")
 {
 my $cmd = 
@@ -102,9 +115,18 @@ system($cmd) == 0
 }
 
 # 4. Ensure the admin user exists (idempotent)
-#system("wp user get $adm_user --field=ID") == 0
-#  or do
+my @check = (
+  "wp", "user", "get", $adm_user,
+  "--field=ID", "--allow-root"
+); # creating a list to pass to sytem
+
+if (system(@check) == 0)
 {
+    print "WORDPRESS: Admin user '$adm_user' already exists, skipping creation\n";
+}
+else
+{
+    print "WORDPRESS: Creating admin user '$adm_user'\n";
    my $cmd =
 		" wp user create "
 		. $adm_user . " "
