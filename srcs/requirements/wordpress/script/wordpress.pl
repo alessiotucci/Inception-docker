@@ -23,7 +23,6 @@ my $user_file = $ENV{'WORDPRESS_DB_USER_FILE'} or die "WORDPRESS ERROR: Secret f
 my $pass_file = $ENV{'WORDPRESS_DB_PASSWORD_FILE'} or die "WORDPRESS ERROR: Secret file path not provided";
 
 
-
 # Read secrets
 my $db_user = read_secret($user_file);
 my $db_pass = read_secret($pass_file);
@@ -80,12 +79,14 @@ unless (-e $config) # -e check if the file exist
 ###############################################################################
 # After writing wp-config.php:
 # 1. Read admin credentials from secret files
-#TODO replace the hard coded values with the env or secrets values
-my $adm_user = 'admin';#   = $ENV{'WORDPRESS_AD_FILE'}         or die "No WORDPRESS_AD_FILE";
-print("admin: $adm_user\n");
+my $wp_user = $ENV{'WORDPRESS_AD'}         or die "No WORDPRESS_AD_FILE";
+my $wp_pass = $ENV{'WORDPRESS_AD_PASSWORD'} or die "No WORDPRESS_AD_PASSWORD";
+print("user from env: $wp_user\n");
+print("password from env: $wp_pass\n");
 
-my $adm_pass = 'password'; #$ENV{'WORDPRESS_AD_PASSWORD_FILE'} or die "No WORDPRESS_AD_PASSWORD_FILE";
-printf("password: $adm_pass\n");
+
+my $adm_user = read_secret($wp_user);
+my $adm_pass = read_secret($wp_pass);
 
 # 2. Read other install parameters
 my $site_url   = "test";

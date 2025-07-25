@@ -3,7 +3,7 @@
 #    Host: e3r7p3.42roma.it                                           /_/      #
 #    File: docker-compose.yml                                      ( o.o )     #
 #    Created: 2025/07/13 15:14:40 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/24 17:06:33                                   /          #
+#    Updated: 2025/07/25 11:27:09                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -59,8 +59,8 @@ services:
       - WORDPRESS_DB_NAME=wordpress
       - WORDPRESS_DB_USER_FILE=/run/secrets/db_user.txt
       - WORDPRESS_DB_PASSWORD_FILE=/run/secrets/db_user_password.txt
-      - WORDPRESS_AD=amatta
-      - WORDPRESS_AD_PASSWORD=mandolino
+      - WORDPRESS_AD=/run/secrets/wp_admin_user.txt
+      - WORDPRESS_AD_PASSWORD=/run/secrets/wp_admin_pass.txt
     depends_on:
      - mariadb
     networks:
