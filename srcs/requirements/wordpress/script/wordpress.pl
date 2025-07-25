@@ -79,14 +79,20 @@ unless (-e $config) # -e check if the file exist
 ###############################################################################
 # After writing wp-config.php:
 # 1. Read admin credentials from secret files
-my $wp_user = $ENV{'WORDPRESS_AD'}         or die "No WORDPRESS_AD_FILE";
-my $wp_pass = $ENV{'WORDPRESS_AD_PASSWORD'} or die "No WORDPRESS_AD_PASSWORD";
-print("user from env: $wp_user\n");
-print("password from env: $wp_pass\n");
+# new (matches docker-compose)
+my $adm_user_file = $ENV{'WORDPRESS_ADMIN_USER_FILE'}
+    or die "WORDPRESS ERROR: WORDPRESS_ADMIN_USER_FILE not set";
+my $adm_pass_file = $ENV{'WORDPRESS_ADMIN_PASSWORD_FILE'}
+    or die "WORDPRESS ERROR: WORDPRESS_ADMIN_PASSWORD_FILE not set";
+
+# read the actual secrets
+my $adm_user = read_secret($adm_user_file) // die "WORDPRESS ERROR: admin user secret is empty";
+my $adm_pass = read_secret($adm_pass_file) // die "WORDPRESS ERROR: admin password secret is empty";
+# In Perl, the // operator is the defined-or operator.
+# It returns the left-hand side operand if it's defined (not undef); otherwise,
+#  it returns the right-hand side operand.
 
 
-my $adm_user = read_secret($wp_user);
-my $adm_pass = read_secret($wp_pass);
 
 # 2. Read other install parameters
 my $site_url   = "test";
