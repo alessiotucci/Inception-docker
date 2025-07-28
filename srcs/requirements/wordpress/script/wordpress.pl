@@ -95,6 +95,7 @@ my $adm_pass = read_secret($adm_pass_file) // die "WORDPRESS ERROR: admin passwo
 
 
 # 2. Read other install parameters
+# TODO: check this stuff, maybe put in the env
 my $site_url   = "test";
 my $site_title = "test";
 my $admin_email= 'test@gmail.com';
@@ -103,7 +104,9 @@ my $admin_email= 'test@gmail.com';
 # 3. Run WP-CLI to install WordPress if not already installed
 # -f $file Exists and is a plain file
 ###############################################################################
-unless (-f "/var/www/html/wp-includes/version.php")
+
+#unless (-f "/var/www/html/wp-includes/version.php")
+unless (system("wp core is-installed --allow-root") == 0)
 {
 my $cmd = 
   "wp core install "
@@ -121,7 +124,7 @@ system($cmd) == 0
 
 }
 
-# 4. Ensure the admin user exists (idempotent)
+## 4. Ensure the admin user exists (idempotent)
 my @check = (
   "wp", "user", "get", $adm_user,
   "--field=ID", "--allow-root"
