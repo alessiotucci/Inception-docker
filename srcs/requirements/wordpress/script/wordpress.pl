@@ -87,7 +87,9 @@ my $adm_pass_file = $ENV{'WORDPRESS_ADMIN_PASSWORD_FILE'}
 
 # read the actual secrets
 my $adm_user = read_secret($adm_user_file) // die "WORDPRESS ERROR: admin user secret is empty";
+print("WP DEBUG LOG: $adm_user\n");
 my $adm_pass = read_secret($adm_pass_file) // die "WORDPRESS ERROR: admin password secret is empty";
+print("WP DEBUG LOG: $adm_pass\n");
 # In Perl, the // operator is the defined-or operator.
 # It returns the left-hand side operand if it's defined (not undef); otherwise,
 #  it returns the right-hand side operand.
@@ -96,9 +98,9 @@ my $adm_pass = read_secret($adm_pass_file) // die "WORDPRESS ERROR: admin passwo
 
 # 2. Read other install parameters
 # TODO: check this stuff, maybe put in the env
-my $site_url   = "test";
-my $site_title = "test";
-my $admin_email= 'test@gmail.com';
+my $site_url   = $ENV{WORDPRESS_SITE_URL} or die "WORDPRESS ERROR: site url env not set";
+my $site_title = $ENV{WORDPRESS_SITE_TITLE} or die "WORDPRESS ERROR: site title env not set";
+my $admin_email= $ENV{WORDPRESS_ADMIN_EMAIL} or die "WORDPRESS ERROR: admin email env not";
 
 ###############################################################################
 # 3. Run WP-CLI to install WordPress if not already installed
@@ -139,13 +141,13 @@ else
     print "WORDPRESS: Creating admin user '$adm_user'\n";
    my $cmd =
 		" wp user create "
-		. $adm_user . " "
+		. $adm_user . "  "
 		. $admin_email
 		. " --role=administrator"
 		. " --allow-root"
 		. " --user_pass=$adm_pass";
 		
-   print("DEBUG:[$cmd]");
+   print("DEBUG:[$cmd]\n");
     system($cmd) == 0
       or die "FAIL: Failed to create admin user";
   };
