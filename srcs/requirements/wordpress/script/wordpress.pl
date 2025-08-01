@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 use IO::Socket::INET;
+use Term::ANSIColor;
 
 sub read_secret
 {
@@ -11,6 +12,11 @@ sub read_secret
     my $value = <$fh>;
     close $fh;
     chomp $value;
+###
+	print color('bold red');
+	print "\t[$value].\n";
+	print color('reset');
+###
     return $value;
 }
 

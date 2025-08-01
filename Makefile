@@ -3,7 +3,7 @@
 #    Host: e4r2p4.42roma.it                                           /_/      #
 #    File: Makefile                                                ( o.o )     #
 #    Created: 2025/07/12 17:34:26 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/23 10:25:42                                   /          #
+#    Updated: 2025/08/01 17:30:07                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -91,7 +91,10 @@ down:
 # ************************ #
 clean: down
 	@echo "$(GREEN) $(USERNAME):\t$(PROJECTNAME) $(RESET) clean rule!"
-	sudo rm -rf /home/$(USERNAME)/data/*
+#	sudo rm -rf /home/$(USERNAME)/data/*
+#	TODO
+	@sudo find /home/$(USERNAME)/data/mariadb/ -mindepth 1 -delete || true
+	@sudo find /home/$(USERNAME)/data/wordpress/ -mindepth 1 -delete || true
 
 
 
