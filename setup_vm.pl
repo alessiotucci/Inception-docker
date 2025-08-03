@@ -8,14 +8,14 @@ use Term::ANSIColor;
 my $domain = "atucci.42.fr";
 
 # Function to print colored messages
-sub print_message()
+sub print_message
 {
 	my ($color, $message) = @_;
 	print color($color), $message, color('reset'), "\n";
 }
 
 # Function to execute a command and print a message
-sub execute_command()
+sub execute_command
 {
 	my ($color, $message, $command) = @_;
 	# Print the message
@@ -24,7 +24,7 @@ sub execute_command()
 }
 
 # Function to update the system
-sub update_system()
+sub update_system
 {
 	# Execute the system update command
 	execute_command('magenta', 'Updating system...', 'sudo apt update > /dev/null 2>&1 && sudo apt upgrade -y > /dev/null 2>&1');
@@ -32,7 +32,7 @@ sub update_system()
 }
 
 # Function to install packages
-sub install_packages()
+sub install_packages
 {
 	my @packages = @_;
 	# Loop over each package
@@ -93,7 +93,9 @@ sub prompt_reboot
 		system('sudo reboot');
 	}
 	else
+	{
 		print_message('green', 'Reboot skipped. Please reboot manually if needed.');
+	}
 }
 
 # Main execution
