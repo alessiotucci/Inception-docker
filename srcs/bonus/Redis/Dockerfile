@@ -3,9 +3,9 @@
 #    Host: atucci-Surface-Laptop-3                                    /_/      #
 #    File: Dockerfile                                              ( o.o )     #
 #    Created: 2025/07/23 10:17:46 | By: atucci <marvin@42.fr>      > ^ <       #
-#    Updated: 2025/07/23 10:17:48                                   /          #
+#    Updated: 2025/08/03 17:15:08                                   /          #
 #    OS: Linux 6.8.0-64-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
 
-
+FROM debian:oldstable
