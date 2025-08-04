@@ -3,7 +3,7 @@
 #    Host: e3r7p3.42roma.it                                           /_/      #
 #    File: Dockerfile                                              ( o.o )     #
 #    Created: 2025/07/13 16:45:17 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/07/24 17:39:37                                   /          #
+#    Updated: 2025/08/03 20:23:51                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -36,7 +36,10 @@ RUN apt-get update && apt-get install -y \
 # after installing php-fpm, add:
 
 #debugging together :(
-RUN apt-get update && apt-get install -y netcat iputils-ping && rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && apt-get install -y netcat iputils-ping && rm -rf /var/lib/apt/lists/*
+
+# Redis addition
+RUN apt-get update && apt-get install -y php-redis
 
 RUN sed -i 's|^listen = .*|listen = 0.0.0.0:9000|' /etc/php/7.4/fpm/pool.d/www.conf
 

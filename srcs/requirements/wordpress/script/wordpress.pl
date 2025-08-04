@@ -3,6 +3,9 @@ use strict;
 use warnings;
 use IO::Socket::INET;
 use Term::ANSIColor;
+use IO::Socket::INET;
+use Time::HiRes qw(sleep);
+
 
 sub read_secret
 {
@@ -158,7 +161,73 @@ else
       or die "FAIL: Failed to create admin user";
   };
 ###############################################################################
+# --- Configuration ---
+my $redis_host = $ENV{REDIS_HOST} || 'redis';
+my $redis_port = $ENV{REDIS_PORT} || 6379;
+my $wait_secs  = 20;
+my $interval   = 1;
 
+# --- 1. Wait for Redis to be reachable ---
+print "Waiting for Redis at $redis_host:$redis_port …\n";
+my $ready;
+for my $i (1 .. $wait_secs) {
+    if ( my $sock = IO::Socket::INET->new(
+            PeerHost => $redis_host,
+            PeerPort => $redis_port,
+            Proto    => 'tcp',
+            Timeout  => 1,
+        )
+    ) {
+        close $sock;
+        $ready = 1;
+        last;
+    }
+    printf "  retry %2d/%d …\n", $i, $wait_secs;
+    sleep($interval);
+}
+
+die "ERROR: Redis never became available\n" unless $ready;
+print "Redis is up!\n";
+
+# --- 2. Ensure the Redis plugin is installed & activated ---
+if ( system("wp plugin is-installed redis-cache --allow-root") != 0 ) {
+    print "Installing redis-cache plugin …\n";
+    system("wp plugin install redis-cache --activate --allow-root") == 0
+      or die "FAIL: could not install Redis plugin\n";
+}
+else {
+    print "Redis plugin already installed. Skipping install …\n";
+}
+
+# --- 3. Configure WP-Redis connection in wp-config.php ---
+my @settings = (
+    [WP_REDIS_HOST     => $redis_host],
+    [WP_REDIS_PORT     => $redis_port],
+    [WP_REDIS_TIMEOUT  => 1],
+    [WP_REDIS_DATABASE => 0],
+);
+
+for my $pair (@settings) {
+    my ($key, $val) = @$pair;
+    print "Setting $key = $val …\n";
+    system(
+        "wp config set $key $val --raw --allow-root"
+    ) == 0 or die "FAIL: could not set $key\n";
+}
+
+# --- 4. Enable the object cache if not already enabled ---
+chomp( my $status = `wp redis status --allow-root 2>&1` );
+if ( $status !~ /Status:\s*Enabled/ ) {
+    print "Enabling Redis object cache …\n";
+    system("wp redis enable --allow-root") == 0
+      or die "FAIL: could not enable Redis cache\n";
+}
+else {
+    print "Redis cache already enabled. Skipping enable …\n";
+}
+
+print "✅ WordPress + Redis setup complete!\n";
+###############################################################################
 my $var = '
 ▗▖ ▗▖ ▗▄▖ ▗▄▄▖ ▗▄▄▄ ▗▄▄▖ ▗▄▄▖ ▗▄▄▄▖ ▗▄▄▖ ▗▄▄▖
 ▐▌ ▐▌▐▌ ▐▌▐▌ ▐▌▐▌  █▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌   ▐▌
