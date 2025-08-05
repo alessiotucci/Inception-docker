@@ -17,6 +17,25 @@ use POSIX qw(strftime);
 #   WORDPRESS_VOLUME    – (optional) host path to mount into /files/
 ################################################################################
 
+sub timestamp
+{
+    return strftime('%Y-%m-%d %H:%M:%S', localtime);
+}
+
+sub log_step
+{
+    my ($message) = @_;
+    print "[" . timestamp() . "] $message\n";
+}
+
+sub fail_if
+{
+    my ($code, $step) = @_;
+    if ($code != 0)
+	{
+        die "[" . timestamp() . "] ERROR during $step (exit=$code)\n";
+    }
+}
 sub read_secret {
     my ($path) = @_;
     open my $fh, '<', $path
@@ -41,7 +60,7 @@ my $wp_vol   = $ENV{WORDPRESS_VOLUME} // '';
 die "FTP ERROR: Invalid username '$ftp_user'\n"
   unless $ftp_user =~ /^[a-z0-9_][a-z0-9_\-]*$/i;
 
-print "[$(strftime('%Y-%m-%d %H:%M:%S', localtime))] FTP: Configuring user '$ftp_user'\n";
+log_step("FTP: Configuring user\n");
 
 # 1) Create system user if missing
 if (getpwnam $ftp_user) {
@@ -58,6 +77,48 @@ else {
     ) == 0
       or die "FTP ERROR: useradd failed: exit=$?\n";
 }
+
+# extra step) 
+####################################################################################
+
+
+
+# --- Create FTP root folder ---
+my $ftp_root = "/home/$ftp_user/ftp";
+unless (-d $ftp_root) {
+    log_step("Creating FTP root folder: $ftp_root");
+    mkdir($ftp_root, 0755)
+        or die "[" . timestamp() . "] ERROR: Failed to create $ftp_root: $!\n";
+} else {
+    log_step("FTP root folder already exists: $ftp_root");
+}
+
+log_step("Setting ownership to nobody:nogroup on $ftp_root");
+fail_if(system("chown nobody:nogroup $ftp_root"), "chown on $ftp_root");
+
+log_step("Setting permissions to 0555 on $ftp_root");
+chmod(0555, $ftp_root)
+    or die "[" . timestamp() . "] ERROR: chmod failed on $ftp_root: $!\n";
+
+# --- Create files subfolder ---
+my $files_dir = "$ftp_root/files";
+unless (-d $files_dir) {
+    log_step("Creating FTP files folder: $files_dir");
+    mkdir($files_dir, 0755)
+        or die "[" . timestamp() . "] ERROR: Failed to create $files_dir: $!\n";
+} else {
+    log_step("FTP files folder already exists: $files_dir");
+}
+
+log_step("Setting ownership to $ftp_user:$ftp_user on $files_dir");
+fail_if(system("chown $ftp_user:$ftp_user $files_dir"), "chown on $files_dir");
+
+log_step("Setting permissions to 0755 on $files_dir");
+chmod(0755, $files_dir)
+    or die "[" . timestamp() . "] ERROR: chmod failed on $files_dir: $!\n";
+
+log_step("✅ FTP folder structure configured successfully");
+####################################################################################
 
 # 2) Set password
 {
@@ -85,45 +146,6 @@ my $userlist = '/etc/vsftpd.userlist';
     }
     close $ul;
 }
-###############################################################################
-## 4) Build FTP directory tree
-#my $ftp_root = "/home/$ftp_user/ftp";
-#my $files_dir = catfile( $ftp_root, 'files' );
-#
-## Remove legacy folder if mixing with wp-volume
-#if ( $wp_vol && -d $files_dir ) {
-#    remove_tree($files_dir);
-#}
-#
-#if ( $wp_vol && -d $wp_vol ) {
-#    symlink abs_path($wp_vol), $files_dir
-#      or die "FTP ERROR: Cannot symlink WP volume: $!";
-#}
-#else {
-#    make_path( $files_dir, { mode => 0755 } )
-#      or die "FTP ERROR: Cannot create $files_dir: $!";
-#}
-#
-## Secure the ftp root (no write by user)
-#chmod 0555, $ftp_root
-#  or die "FTP ERROR: chmod $ftp_root: $!";
-#
-## Ensure ownership
-#chown scalar(getpwnam('nobody')), scalar(getgrnam('nogroup')), $ftp_root;
-#chown -1, scalar(getpwnam($ftp_user)), $files_dir;
-#system('chown', '-R', "$ftp_user:$ftp_user", $files_dir) == 0
-#  or die "FTP ERROR: chown recursive failed: exit=$?\n";
-
-# 4) Build & secure FTP directory tree
-my $ftp_root = "/home/$ftp_user/ftp";
-my $files_dir = catfile( $ftp_root, 'files' );
-
-# Ensure ftp_root exists
-unless ( -d $ftp_root ) {
-    make_path( $ftp_root, { mode => 0755 } );
-    die timestamp(), " FTP ERROR: cannot create $ftp_root: $!\n"
-      unless -d $ftp_root;
-}
 
 # Handle optional WP volume or plain 'files' folder
 if ( $wp_vol && -d $wp_vol ) {
@@ -150,29 +172,27 @@ chown scalar(getpwnam('nobody')), scalar(getgrnam('nogroup')), $ftp_root;
 chown scalar(getpwnam($ftp_user)), scalar(getpwnam($ftp_user)), $files_dir;
 ###############################################################################
 
-# 5) Write a clean vsftpd.conf
-my %conf = (
-    local_enable           => 'YES',
-    write_enable           => 'YES',
-    chroot_local_user      => 'YES',
-    allow_writeable_chroot => 'YES',
-    pasv_enable            => 'YES',
-    pasv_min_port          => 40000,
-    pasv_max_port          => 40005,
-    userlist_enable        => 'YES',
-    userlist_file          => $userlist,
-);
+my $conf = <<"EOF";
+local_enable=YES
+write_enable=YES
+chroot_local_user=YES
+allow_writeable_chroot=YES
+pasv_enable=YES
+pasv_min_port=40000
+pasv_max_port=40005
+userlist_enable=YES
+userlist_deny=NO
+userlist_file=/etc/vsftpd.userlist
+local_root=/home/$ftp_user/ftp/files
+EOF
 
-print "FTP: Generating vsftpd.conf\n";
-open my $cf, '>', '/etc/vsftpd.conf'
-  or die "FTP ERROR: Cannot open /etc/vsftpd.conf: $!";
-while ( my ($k, $v) = each %conf ) {
-    print $cf "$k=$v\n";
-}
-close $cf;
+open my $cfh, '>>', '/etc/vsftpd.conf' or die "…";
+print $cfh $conf;
+close $cfh;
+
 
 # 6) Drop into vsftpd
-print "FTP: Starting vsftpd\n";
+log_step("FTP: Starting vsftpd\n");
   exec '/usr/sbin/vsftpd',
      '-olisten=YES',
      '-obackground=NO',

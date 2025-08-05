@@ -3,7 +3,7 @@
 #    Host: e3r7p3.42roma.it                                           /_/      #
 #    File: docker-compose.yml                                      ( o.o )     #
 #    Created: 2025/07/13 15:14:40 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/08/04 18:23:25                                   /          #
+#    Updated: 2025/08/05 19:10:39                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -140,6 +140,15 @@ services:
 # OPTIONAL: Static website service (bonus)
 # - Simple static web page (HTML, JS, CSS)
 # - Could be served by a lightweight web server (e.g., nginx or httpd)
+  static:
+    build:
+      context: ./bonus/static
+    image: static
+    container_name: static
+    restart: always
+    networks:
+      - app-network
+
 
 # OPTIONAL: Adminer (bonus)
 # - Lightweight DB management interface

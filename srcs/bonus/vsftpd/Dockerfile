@@ -3,7 +3,7 @@
 #    Host: atucci-Surface-Laptop-3                                    /_/      #
 #    File: Dockerfile                                              ( o.o )     #
 #    Created: 2025/07/23 10:20:37 | By: atucci <marvin@42.fr>      > ^ <       #
-#    Updated: 2025/08/04 18:30:17                                   /          #
+#    Updated: 2025/08/05 17:37:45                                   /          #
 #    OS: Linux 6.8.0-64-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -29,6 +29,9 @@ RUN chmod +x /usr/local/bin/vsftpd.pl
 
 # Expose FTP control port and passive ports
 EXPOSE 21 40000-40005
+
+# fix the issue with connections
+RUN echo "/usr/sbin/nologin" >> etc/shells
 
 # Entrypoint: run the perl script
 ENTRYPOINT ["/usr/local/bin/vsftpd.pl"]
