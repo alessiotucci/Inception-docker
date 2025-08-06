@@ -3,7 +3,7 @@
 #    Host: e3r7p3.42roma.it                                           /_/      #
 #    File: docker-compose.yml                                      ( o.o )     #
 #    Created: 2025/07/13 15:14:40 | By: atucci <atucci@student.42  > ^ <       #
-#    Updated: 2025/08/05 19:10:39                                   /          #
+#    Updated: 2025/08/06 16:53:27                                   /          #
 #    OS: Linux 6.5.0-44-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -165,9 +165,19 @@ services:
     networks:
       - app-network
 
-# OPTIONAL: Your own service (bonus)
-# - Justify its use and isolate it in a separate container
-# - Follow same rules for volumes, env vars, and networks
+# OPTIONAL: Your own service (bonus) PORTAINER!!
+  portainer:
+    build:
+      context: ./bonus/portainer
+      dockerfile: Dockerfile
+    image: portainer
+    container_name: portainer
+    restart: always
+    volumes:
+      - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock  # Allow Portainer to manage Docker
+    networks:
+      - app-network
 
 # Define named volumes here
 # - wordpress_db_data:
@@ -187,6 +197,12 @@ volumes:
       o: bind
       device: /home/atucci/data/wordpress # bind WordPress volume to host
 
+  portainer_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/atucci/data/portainer # bind Portainer volume to host
 
 # Define custom networks here
 # - app-network:
