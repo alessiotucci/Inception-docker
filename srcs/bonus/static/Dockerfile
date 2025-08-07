@@ -3,7 +3,7 @@
 #    Host: atucci-Surface-Laptop-3                                    /_/      #
 #    File: Dockerfile                                              ( o.o )     #
 #    Created: 2025/07/23 10:22:17 | By: atucci <marvin@42.fr>      > ^ <       #
-#    Updated: 2025/08/05 19:12:55                                   /          #
+#    Updated: 2025/08/07 18:33:43                                   /          #
 #    OS: Linux 6.8.0-64-generic x86_64 | CPU: Intel(R) Core(TM) i (|_|)_)      #
 #                                                                              #
 # **************************************************************************** #
@@ -14,10 +14,14 @@ FROM debian:oldstable
 RUN apt-get update                                \
  && apt-get install -y --no-install-recommends \
  nginx              \
+ curl              \
+ vim \
  && rm -rf /var/lib/apt/lists/*
 
 # Copy our single-page site into NGINX’s default html directory
-COPY index.html /usr/share/nginx/html/index.html
+#COPY index.html /usr/share/nginx/html/index.html
+# Copy our single-page site into Debian-NGINX’s html directory
+COPY index.html /var/www/html/index.html
 
 # Ensure NGINX can write its PID/run files
 RUN mkdir -p /run/nginx
